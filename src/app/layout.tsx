@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
-import BrutalistLayout from "@/components/layout/BrutalistLayout";
-import "@fontsource/space-mono/400.css";
-import "@fontsource/space-mono/700.css";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/inter/700.css";
 
 export const metadata: Metadata = {
-  title: "BURNER_LAB_v1",
-  description: "Disposable EVM Wallet Generator and Testnet Farmer",
+  title: "Burner Lab",
+  description: "Disposable EVM Wallet Generator",
 };
 
 export default function RootLayout({
@@ -17,11 +19,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-mono bg-zinc-950 text-zinc-100 antialiased selection:bg-zinc-100 selection:text-black">
+      <body className="antialiased bg-zinc-950 text-zinc-50">
         <Providers>
-          <BrutalistLayout>
+          <DashboardLayout>
             {children}
-          </BrutalistLayout>
+          </DashboardLayout>
         </Providers>
       </body>
     </html>

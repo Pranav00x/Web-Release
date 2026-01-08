@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useWallets } from "@/context/WalletContext";
 import { ethers } from "ethers";
-import { Target, Zap, Activity, Box, Code } from "lucide-react";
+import { Target, Zap, Code, ChevronRight, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const NFTMinter = () => {
@@ -46,107 +46,111 @@ export const NFTMinter = () => {
     };
 
     return (
-        <div className="border border-zinc-800 bg-black relative">
-            {/* Header */}
-            <div className="bg-zinc-900/50 p-4 border-b border-zinc-800 flex justify-between items-center">
-                <h2 className="text-sm font-bold uppercase tracking-widest text-zinc-100 flex items-center gap-2">
-                    <Box size={16} className="text-purple-500" fill="currentColor" /> Raw Execution
+        <div className="bg-zinc-900/30 border border-zinc-800/50 rounded-2xl overflow-hidden">
+            <div className="p-6 border-b border-zinc-800/50 flex justify-between items-center">
+                <h2 className="text-base font-semibold text-zinc-100 flex items-center gap-2">
+                    <Zap size={18} className="text-purple-500" /> Contract Interaction
                 </h2>
-                <div className="text-[10px] text-zinc-500 uppercase font-bold border border-zinc-800 px-2 py-1">
-                    Mode: Contract Write
-                </div>
+                <span className="text-xs font-medium text-zinc-500 bg-zinc-800/50 px-2.5 py-1 rounded-full">
+                    Low-Level Call
+                </span>
             </div>
 
-            <div className="p-6 space-y-5">
+            <div className="p-6 space-y-6">
 
-                {/* RPC Override */}
-                <div className="group">
-                    <label className="text-[9px] uppercase font-bold text-zinc-600 block mb-1 group-focus-within:text-purple-400">RPC Gateway</label>
+                <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-zinc-400">Target RPC Node</label>
                     <input
                         value={rpcUrl}
                         onChange={(e) => setRpcUrl(e.target.value)}
-                        className="w-full bg-zinc-950 border border-zinc-800 p-2 text-zinc-300 font-mono text-xs focus:border-purple-500 outline-none"
+                        className="w-full bg-zinc-950/50 border border-zinc-800 rounded-lg p-2.5 text-zinc-200 text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500/50 outline-none transition-all placeholder:text-zinc-700 font-mono"
                     />
                 </div>
 
-                {/* Executor */}
-                <div className="group">
-                    <label className="text-[9px] uppercase font-bold text-zinc-600 block mb-1 group-focus-within:text-purple-400">Executor Identity</label>
-                    <select
-                        className="w-full bg-zinc-950 border border-zinc-800 p-2 text-zinc-300 font-mono text-xs focus:border-purple-500 outline-none"
-                        value={selectedWalletIdx}
-                        onChange={(e) => setSelectedWalletIdx(Number(e.target.value))}
-                    >
-                        {wallets.length === 0 && <option>No identities found</option>}
-                        {wallets.map((w, i) => (
-                            <option key={w.address} value={i}>{i} - {w.address.substring(0, 6)}... ({w.name})</option>
-                        ))}
-                    </select>
-                </div>
-
-                <div className="my-4 border-t border-zinc-800 border-dashed"></div>
-
-                {/* Contract */}
-                <div className="group">
-                    <label className="text-[9px] uppercase font-bold text-zinc-600 block mb-1 group-focus-within:text-purple-400">Target Contract</label>
-                    <input
-                        value={contractAddress}
-                        onChange={e => setContractAddress(e.target.value)}
-                        placeholder="0x..."
-                        className="w-full bg-zinc-950 border border-zinc-800 p-2 text-zinc-300 font-mono text-xs focus:border-purple-500 outline-none"
-                    />
-                </div>
-
-                {/* Function Sig */}
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="group">
-                        <label className="text-[9px] uppercase font-bold text-zinc-600 block mb-1 group-focus-within:text-purple-400">Function Sig</label>
-                        <div className="relative">
-                            <Code size={12} className="absolute left-2 top-2.5 text-zinc-600" />
-                            <input
-                                value={funcSig}
-                                onChange={e => setFuncSig(e.target.value)}
-                                placeholder="mint(uint256)"
-                                className="w-full bg-zinc-950 border border-zinc-800 p-2 pl-7 text-zinc-300 font-semibold font-mono text-xs focus:border-purple-500 outline-none"
-                            />
-                        </div>
+                <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-zinc-400">Executor Wallet</label>
+                    <div className="relative">
+                        <select
+                            className="w-full bg-zinc-950/50 border border-zinc-800 rounded-lg p-2.5 text-zinc-200 text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500/50 outline-none appearance-none transition-all"
+                            value={selectedWalletIdx}
+                            onChange={(e) => setSelectedWalletIdx(Number(e.target.value))}
+                        >
+                            {wallets.length === 0 && <option>No wallets available</option>}
+                            {wallets.map((w, i) => (
+                                <option key={w.address} value={i}>{w.name || `Wallet #${i + 1}`} ({w.address.substring(0, 8)}...)</option>
+                            ))}
+                        </select>
+                        <ChevronRight className="absolute right-3 top-3 text-zinc-500 pointer-events-none rotate-90" size={14} />
                     </div>
-                    <div className="group">
-                        <label className="text-[9px] uppercase font-bold text-zinc-600 block mb-1 group-focus-within:text-purple-400">Value (ETH)</label>
+                </div>
+
+                <div className="h-px bg-zinc-800/50 w-full border-t border-dashed border-zinc-800"></div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="md:col-span-2 space-y-1.5">
+                        <label className="text-xs font-medium text-zinc-400">Contract Address</label>
+                        <input
+                            value={contractAddress}
+                            onChange={e => setContractAddress(e.target.value)}
+                            placeholder="0x..."
+                            className="w-full bg-zinc-950/50 border border-zinc-800 rounded-lg p-2.5 text-zinc-200 text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500/50 outline-none transition-all placeholder:text-zinc-700 font-mono"
+                        />
+                    </div>
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-zinc-400">Value (Wei/ETH)</label>
                         <input
                             value={value}
                             onChange={e => setValue(e.target.value)}
                             placeholder="0.0"
-                            className="w-full bg-zinc-950 border border-zinc-800 p-2 text-zinc-300 font-mono text-xs focus:border-purple-500 outline-none"
+                            className="w-full bg-zinc-950/50 border border-zinc-800 rounded-lg p-2.5 text-zinc-200 text-sm focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500/50 outline-none transition-all placeholder:text-zinc-700"
                         />
                     </div>
                 </div>
 
-                {/* Args */}
-                <div className="group">
-                    <label className="text-[9px] uppercase font-bold text-zinc-600 block mb-1 group-focus-within:text-purple-400">Arguments (comma sep)</label>
-                    <textarea
-                        value={args}
-                        onChange={e => setArgs(e.target.value)}
-                        placeholder="1, 0x123..."
-                        rows={2}
-                        className="w-full bg-zinc-950 border border-zinc-800 p-2 text-zinc-300 font-mono text-xs focus:border-purple-500 outline-none resize-none"
-                    />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-zinc-400">Function Signature</label>
+                        <div className="relative">
+                            <Code size={14} className="absolute left-3 top-2.5 text-zinc-500" />
+                            <input
+                                value={funcSig}
+                                onChange={e => setFuncSig(e.target.value)}
+                                placeholder="mint(uint256)"
+                                className="w-full bg-zinc-950/50 border border-zinc-800 rounded-lg p-2.5 pl-9 text-zinc-200 text-sm font-semibold font-mono focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500/50 outline-none transition-all placeholder:text-zinc-700"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-zinc-400">Arguments (Comma Separated)</label>
+                        <input
+                            value={args}
+                            onChange={e => setArgs(e.target.value)}
+                            placeholder="1, 0x123..."
+                            className="w-full bg-zinc-950/50 border border-zinc-800 rounded-lg p-2.5 text-zinc-200 text-sm font-mono focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500/50 outline-none transition-all placeholder:text-zinc-700"
+                        />
+                    </div>
                 </div>
 
                 <button
                     onClick={handleMint}
                     disabled={!contractAddress || wallets.length === 0}
-                    className="w-full py-4 bg-transparent border border-zinc-600 text-zinc-300 hover:border-purple-500 hover:text-purple-400 hover:bg-purple-900/10 font-bold uppercase flex items-center justify-center gap-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-3 bg-zinc-800 hover:bg-zinc-700 hover:text-white text-zinc-200 rounded-xl text-sm font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
                 >
-                    <Zap size={16} /> Execute Call
+                    <div className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center group-hover:bg-purple-500 transition-colors">
+                        <Play size={10} fill="currentColor" className="text-purple-400 group-hover:text-white" />
+                    </div>
+                    Execute Transaction
                 </button>
 
                 {status && (
-                    <div className="bg-zinc-950 p-3 text-[10px] font-mono break-all border-l-2 border-purple-500 shadow-lg">
-                        <span className={status.startsWith("ERROR") ? "text-red-500" : "text-purple-400"}>
-                            {status}
-                        </span>
+                    <div className={cn(
+                        "p-4 rounded-lg text-xs font-mono break-all border",
+                        status.startsWith("ERROR")
+                            ? "bg-red-500/10 border-red-500/20 text-red-300"
+                            : "bg-emerald-500/10 border-emerald-500/20 text-emerald-300"
+                    )}>
+                        {status}
                     </div>
                 )}
 
