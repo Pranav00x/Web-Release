@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useWallets } from "@/context/WalletContext";
 import { ethers } from "ethers";
-import { Zap, ArrowRight, Check, Droplets, Wallet as WalletIcon, ChevronDown } from "lucide-react";
+import { Zap, Check, Droplets, ChevronDown, Rocket } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const CHAINS = [
@@ -22,6 +22,7 @@ export const GasDripper = () => {
     const [logs, setLogs] = useState<string[]>([]);
     const [selectedChain, setSelectedChain] = useState(CHAINS[0]);
 
+    // ... same helpers ...
     const toggleWallet = (addr: string) => {
         if (selectedWallets.includes(addr)) {
             setSelectedWallets(selectedWallets.filter((a) => a !== addr));
@@ -72,89 +73,96 @@ export const GasDripper = () => {
     };
 
     return (
-        <div className="bg-zinc-900/30 border border-zinc-800/50 rounded-2xl overflow-hidden shadow-sm">
-            <div className="p-6 border-b border-zinc-800/50 flex justify-between items-center">
-                <h2 className="text-base font-semibold text-zinc-100 flex items-center gap-2">
-                    <Droplets size={18} className="text-blue-500" /> Gas Drip
+        <div className="glass-card rounded-[32px] overflow-hidden shadow-2xl shadow-black/20">
+            <div className="p-8 pb-6 border-b border-white/5 flex justify-between items-center bg-gradient-to-r from-blue-500/10 to-transparent">
+                <h2 className="text-lg font-bold text-white flex items-center gap-3">
+                    <div className="p-2 bg-blue-500 rounded-xl shadow-lg shadow-blue-500/20">
+                        <Droplets size={20} fill="white" className="text-white" />
+                    </div>
+                    Gas Dispenser
                 </h2>
-                <span className="text-xs font-medium text-zinc-500 bg-zinc-800/50 px-2.5 py-1 rounded-full">
-                    Batch Transfer
+                <span className="text-xs font-bold text-blue-300 bg-blue-500/20 px-4 py-2 rounded-full border border-blue-500/20">
+                    Batch Mode
                 </span>
             </div>
 
-            <div className="p-6 space-y-6">
+            <div className="p-8 space-y-8">
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-zinc-400">Network</label>
-                        <div className="relative">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                        <label className="text-xs font-bold uppercase text-slate-500 tracking-wider ml-1">Network</label>
+                        <div className="relative group">
                             <select
-                                className="w-full bg-zinc-950/50 border border-zinc-800 rounded-lg p-2.5 text-zinc-200 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 outline-none appearance-none transition-all"
+                                className="w-full bg-slate-900 border border-slate-800 rounded-[20px] p-4 text-slate-200 text-sm font-bold focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none appearance-none transition-all cursor-pointer hover:bg-slate-800"
                                 value={selectedChain.name}
                                 onChange={(e) => setSelectedChain(CHAINS.find(c => c.name === e.target.value) || CHAINS[0])}
                             >
                                 {CHAINS.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
                             </select>
-                            <ChevronDown className="absolute right-3 top-3 text-zinc-500 pointer-events-none" size={14} />
+                            <ChevronDown className="absolute right-5 top-5 text-slate-500 pointer-events-none group-hover:text-white transition-colors" size={16} />
                         </div>
                     </div>
 
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-zinc-400">Amount per Wallet (ETH)</label>
-                        <input
-                            type="text"
-                            value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
-                            className="w-full bg-zinc-950/50 border border-zinc-800 rounded-lg p-2.5 text-zinc-200 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 outline-none transition-all"
-                            placeholder="0.01"
-                        />
+                    <div className="space-y-3">
+                        <label className="text-xs font-bold uppercase text-slate-500 tracking-wider ml-1">Amount (ETH)</label>
+                        <div className="relative">
+                            <input
+                                type="text"
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                                className="w-full bg-slate-900 border border-slate-800 rounded-[20px] p-4 text-slate-200 text-sm font-bold focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all placeholder:text-slate-700"
+                                placeholder="0.01"
+                            />
+                            <span className="absolute right-5 top-4 text-slate-500 font-bold text-sm pointer-events-none">ETH</span>
+                        </div>
                     </div>
                 </div>
 
-                <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-zinc-400">Source Private Key (Sender)</label>
-                    <div className="relative">
-                        <input
-                            type="password"
-                            value={sourceKey}
-                            onChange={(e) => setSourceKey(e.target.value)}
-                            placeholder="Enter private key starting with 0x..."
-                            className="w-full bg-zinc-950/50 border border-zinc-800 rounded-lg p-2.5 pl-10 text-zinc-200 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 outline-none transition-all placeholder:text-zinc-700"
-                        />
-                        <WalletIcon className="absolute left-3 top-2.5 text-zinc-500" size={16} />
-                    </div>
+                <div className="space-y-3">
+                    <label className="text-xs font-bold uppercase text-slate-500 tracking-wider ml-1">Source Information</label>
+                    <input
+                        type="password"
+                        value={sourceKey}
+                        onChange={(e) => setSourceKey(e.target.value)}
+                        placeholder="Paste Sender Private Key (0x...)"
+                        className="w-full bg-slate-900 border border-slate-800 rounded-[20px] p-4 text-slate-200 text-sm font-medium focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all placeholder:text-slate-600"
+                    />
                 </div>
 
-                <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                        <label className="text-xs font-medium text-zinc-400">Recipients</label>
-                        <button onClick={selectAll} className="text-xs font-medium text-blue-500 hover:text-blue-400 transition-colors">
-                            {selectedWallets.length === wallets.length ? "Deselect All" : "Select All Available"}
+                <div className="space-y-4">
+                    <div className="flex justify-between items-center px-1">
+                        <label className="text-xs font-bold uppercase text-slate-500 tracking-wider">Recipients</label>
+                        <button onClick={selectAll} className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-wide">
+                            {selectedWallets.length === wallets.length ? "Deselect All" : "Select All"}
                         </button>
                     </div>
 
-                    <div className="max-h-48 overflow-y-auto border border-zinc-800 rounded-lg bg-zinc-950/50 p-2 space-y-1">
-                        {wallets.length === 0 && <div className="text-zinc-600 text-sm p-4 text-center">No active wallets found.</div>}
+                    <div className="h-48 overflow-y-auto border border-slate-800 rounded-[24px] bg-slate-950/30 p-2 space-y-1">
+                        {wallets.length === 0 && (
+                            <div className="flex flex-col items-center justify-center h-full text-slate-600 space-y-2">
+                                <p className="text-sm font-medium">No active wallets</p>
+                            </div>
+                        )}
                         {wallets.map(w => (
                             <div key={w.address}
                                 onClick={() => toggleWallet(w.address)}
                                 className={cn(
-                                    "flex items-center gap-3 cursor-pointer p-2 rounded-md transition-all border border-transparent",
+                                    "flex items-center gap-4 cursor-pointer p-3 rounded-[16px] transition-all border border-transparent group",
                                     selectedWallets.includes(w.address)
-                                        ? "bg-blue-500/10 border-blue-500/20 text-zinc-200"
-                                        : "hover:bg-zinc-800/50 text-zinc-500"
+                                        ? "bg-blue-500/20 border-blue-500/30"
+                                        : "hover:bg-slate-800/50"
                                 )}
                             >
                                 <div className={cn(
-                                    "w-4 h-4 rounded border flex items-center justify-center transition-colors",
-                                    selectedWallets.includes(w.address) ? "border-blue-500 bg-blue-500 text-white" : "border-zinc-700"
+                                    "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all",
+                                    selectedWallets.includes(w.address) ? "border-blue-500 bg-blue-500 text-white scale-110" : "border-slate-600 group-hover:border-slate-400"
                                 )}>
-                                    {selectedWallets.includes(w.address) && <Check size={10} strokeWidth={3} />}
+                                    {selectedWallets.includes(w.address) && <Check size={12} strokeWidth={4} />}
                                 </div>
 
-                                <div className="flex items-center gap-2 flex-1 min-w-0">
-                                    <span className="text-xs font-mono truncate">{w.address}</span>
-                                    {w.name && <span className="text-[10px] bg-zinc-800 px-1.5 rounded text-zinc-400 truncate">{w.name}</span>}
+                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                    <span className={cn("text-xs font-mono font-medium truncate transition-colors", selectedWallets.includes(w.address) ? "text-blue-200" : "text-slate-400")}>{w.address}</span>
+                                    {w.name && <span className="text-[10px] bg-slate-800 px-2 py-0.5 rounded-full text-slate-400 font-bold truncate">{w.name}</span>}
                                 </div>
                             </div>
                         ))}
@@ -164,24 +172,24 @@ export const GasDripper = () => {
                 <button
                     onClick={executeDrip}
                     disabled={status === "EXECUTING" || selectedWallets.length === 0}
-                    className="w-full py-3 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white rounded-xl text-sm font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2"
+                    className="w-full py-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-[24px] text-base font-bold shadow-xl shadow-blue-500/20 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-3"
                 >
-                    {status === "EXECUTING" ? <Zap className="animate-pulse" size={16} /> : <Zap size={16} />}
-                    {status === "EXECUTING" ? "Processing Batch..." : `Send ${amount} ETH to ${selectedWallets.length} Wallets`}
+                    {status === "EXECUTING" ? <Zap className="animate-pulse" size={20} /> : <Rocket size={20} />}
+                    {status === "EXECUTING" ? "Processing Batch..." : `Launch Drop (${selectedWallets.length})`}
                 </button>
 
                 {/* Logs Console */}
-                <div className="bg-zinc-950 border border-zinc-800 rounded-lg p-4 h-40 overflow-y-auto font-mono text-xs">
+                <div className="bg-black/40 border border-white/5 rounded-[24px] p-6 h-48 overflow-y-auto font-mono text-xs shadow-inner">
                     {logs.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center h-full text-zinc-700 space-y-2 opacity-60">
-                            <div className="w-1.5 h-1.5 bg-zinc-700 rounded-full animate-pulse"></div>
-                            <span>Ready to execute transaction sequence...</span>
+                        <div className="flex flex-col items-center justify-center h-full text-slate-700 space-y-3">
+                            <div className="w-2 h-2 bg-slate-800 rounded-full animate-ping"></div>
+                            <span className="font-bold uppercase tracking-widest text-[10px]">System Standby</span>
                         </div>
                     ) : (
-                        <div className="space-y-1">
+                        <div className="space-y-2">
                             {logs.map((l, i) => (
-                                <div key={i} className={cn("flex gap-2", l.includes("Error") ? "text-red-400" : "text-zinc-400")}>
-                                    <span className="text-zinc-700 select-none">›</span>
+                                <div key={i} className={cn("flex gap-3", l.includes("Error") ? "text-rose-400" : "text-slate-400")}>
+                                    <span className="text-slate-700 select-none">[{new Date().toLocaleTimeString()}]</span>
                                     <span>{l}</span>
                                 </div>
                             ))}

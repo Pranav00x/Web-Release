@@ -10,37 +10,37 @@ export const WalletList = () => {
 
     if (wallets.length === 0) {
         return (
-            <div className="border border-dashed border-zinc-800 rounded-2xl p-12 flex flex-col items-center justify-center text-center bg-zinc-900/30">
-                <div className="w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center mb-4">
-                    <Wallet className="text-zinc-500" size={20} />
+            <div className="glass-card rounded-[32px] p-12 flex flex-col items-center justify-center text-center">
+                <div className="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-6 ring-4 ring-slate-800/20">
+                    <Wallet className="text-slate-500" size={24} />
                 </div>
-                <h3 className="text-zinc-300 font-medium text-sm">No wallets created</h3>
-                <p className="text-zinc-500 text-xs mt-1 max-w-xs">
-                    Get started by generating your first burner wallet above.
+                <h3 className="text-slate-200 font-bold text-lg mb-2">No Active Wallets</h3>
+                <p className="text-slate-500 font-medium max-w-xs">
+                    Your secure local vault is empty. Create your first Identity above.
                 </p>
             </div>
         );
     }
 
     return (
-        <div className="space-y-4">
-            <div className="flex justify-between items-center px-1">
-                <h3 className="text-sm font-semibold text-zinc-400">Your Wallets ({wallets.length})</h3>
-                <span className="text-[10px] bg-zinc-800 text-zinc-400 px-2 py-1 rounded-full font-medium">
-                    Browser Storage
+        <div className="space-y-6">
+            <div className="flex justify-between items-center px-2">
+                <h3 className="text-lg font-bold text-slate-200">Active Identities</h3>
+                <span className="text-xs bg-slate-800 text-slate-400 px-3 py-1.5 rounded-full font-bold border border-white/5">
+                    {wallets.length} Ready
                 </span>
             </div>
 
             <div className="grid gap-4">
-                {wallets.map((wallet) => (
-                    <WalletItem key={wallet.address} wallet={wallet} onDelete={() => deleteWallet(wallet.address)} />
+                {wallets.map((wallet, idx) => (
+                    <WalletItem key={wallet.address} wallet={wallet} idx={idx} onDelete={() => deleteWallet(wallet.address)} />
                 ))}
             </div>
         </div>
     );
 };
 
-const WalletItem = ({ wallet, onDelete }: { wallet: BurnerWallet; onDelete: () => void }) => {
+const WalletItem = ({ wallet, idx, onDelete }: { wallet: BurnerWallet; idx: number; onDelete: () => void }) => {
     const [showKey, setShowKey] = useState(false);
     const [copied, setCopied] = useState<string | null>(null);
 
@@ -50,81 +50,89 @@ const WalletItem = ({ wallet, onDelete }: { wallet: BurnerWallet; onDelete: () =
         setTimeout(() => setCopied(null), 1500);
     };
 
-    return (
-        <div className="group bg-zinc-900/50 border border-zinc-800/80 rounded-xl p-5 hover:border-zinc-700 hover:shadow-lg transition-all duration-200">
+    // Generate a predictable gradient based on address char
+    const gradients = [
+        "from-pink-500 to-rose-500",
+        "from-blue-500 to-cyan-500",
+        "from-emerald-500 to-teal-500",
+        "from-orange-500 to-amber-500",
+        "from-purple-500 to-indigo-500"
+    ];
+    const gradient = gradients[idx % gradients.length];
 
-            <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs">
-                        {wallet.address.substring(2, 4)}
+    return (
+        <div className="bg-slate-900 border border-slate-800 rounded-[28px] p-6 hover:border-slate-700 hover:shadow-xl transition-all duration-300 relative group overflow-hidden">
+
+            {/* Top Decoration */}
+            <div className={cn("absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r opacity-80", gradient)}></div>
+
+            <div className="flex justify-between items-start mb-6">
+                <div className="flex items-center gap-4">
+                    <div className={cn("w-12 h-12 rounded-2xl bg-gradient-to-br flex items-center justify-center text-white font-bold text-sm shadow-lg", gradient)}>
+                        #{idx + 1}
                     </div>
                     <div>
-                        <h4 className="text-sm font-semibold text-zinc-100">{wallet.name || "Untitled Wallet"}</h4>
-                        <p className="text-xs text-zinc-500">Created just now</p>
+                        <h4 className="text-base font-bold text-white mb-0.5">{wallet.name || "Untitled Identity"}</h4>
+                        <p className="text-xs text-slate-500 font-medium">Added Today • {new Date(wallet.createdAt).toLocaleTimeString()}</p>
                     </div>
                 </div>
                 <button
                     onClick={onDelete}
-                    className="text-zinc-500 hover:text-red-500 hover:bg-red-500/10 p-2 rounded-lg transition-colors"
-                    title="Delete Wallet"
+                    className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all"
                 >
                     <Trash2 size={16} />
                 </button>
             </div>
 
-            <div className="space-y-3 bg-zinc-950/50 rounded-lg p-3 border border-zinc-800/50">
+            <div className="space-y-4">
                 {/* Address */}
-                <div className="flex items-center justify-between gap-3 group/addr">
-                    <div className="flex-1 min-w-0">
-                        <p className="text-[10px] uppercase text-zinc-500 font-bold tracking-wider mb-0.5">Address</p>
-                        <code className="text-xs text-zinc-300 font-mono truncate block">
+                <div className="bg-slate-950/50 rounded-2xl p-4 border border-slate-800/50 flex items-center justify-between gap-4 group/field hover:border-slate-700 transition-colors">
+                    <div className="min-w-0 flex-1">
+                        <p className="text-[10px] uppercase text-slate-500 font-bold tracking-wider mb-1">Public Address</p>
+                        <code className="text-sm text-slate-300 font-mono truncate block">
                             {wallet.address}
                         </code>
                     </div>
                     <button
                         onClick={() => copyToClipboard(wallet.address, "addr")}
                         className={cn(
-                            "p-1.5 rounded-md transition-all",
-                            copied === "addr" ? "bg-emerald-500/10 text-emerald-500" : "text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300"
+                            "w-10 h-10 flex items-center justify-center rounded-xl transition-all font-bold",
+                            copied === "addr" ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white"
                         )}
                     >
-                        {copied === "addr" ? <Check size={14} /> : <Copy size={14} />}
+                        {copied === "addr" ? <Check size={18} /> : <Copy size={18} />}
                     </button>
                 </div>
 
-                <div className="h-px bg-zinc-800/50 w-full"></div>
-
-                {/* Key */}
-                <div className="flex items-center justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                        <p className="text-[10px] uppercase text-zinc-500 font-bold tracking-wider mb-0.5 flex items-center gap-1">
+                {/* Private Key */}
+                <div className="bg-slate-950/50 rounded-2xl p-4 border border-slate-800/50 flex items-center justify-between gap-4 group/field hover:border-slate-700 transition-colors">
+                    <div className="min-w-0 flex-1">
+                        <p className="text-[10px] uppercase text-slate-500 font-bold tracking-wider mb-1 flex items-center gap-2">
                             Private Key
-                            {showKey && <span className="text-red-500 text-[9px] bg-red-500/10 px-1 rounded ml-2">UNSAFE</span>}
+                            {showKey && <span className="text-red-400 text-[9px] bg-red-400/10 px-2 py-0.5 rounded-full">UNSAFE</span>}
                         </p>
-                        <div className="relative">
-                            <code className={cn(
-                                "text-xs font-mono truncate block transition-all duration-300",
-                                showKey ? "text-zinc-300" : "text-zinc-600 blur-[2px] select-none"
-                            )}>
-                                {showKey ? wallet.privateKey : "0x................................................"}
-                            </code>
-                        </div>
+                        <code className={cn(
+                            "text-sm font-mono truncate block transition-all",
+                            showKey ? "text-rose-400" : "text-slate-600 blur-[4px] select-none"
+                        )}>
+                            {showKey ? wallet.privateKey : "0x................................................"}
+                        </code>
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-2">
                         <button
                             onClick={() => setShowKey(!showKey)}
-                            className="p-1.5 rounded-md text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300 transition-colors"
+                            className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-all"
                         >
-                            {showKey ? <EyeOff size={14} /> : <Eye size={14} />}
+                            {showKey ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                         <button
                             onClick={() => copyToClipboard(wallet.privateKey, "key")}
                             className={cn(
-                                "p-1.5 rounded-md transition-all",
-                                copied === "key" ? "bg-emerald-500/10 text-emerald-500" : "text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300"
+                                "w-10 h-10 flex items-center justify-center rounded-xl transition-all font-bold",
+                                copied === "key" ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white"
                             )}
                         >
-                            {copied === "key" ? <Check size={14} /> : <Copy size={14} />}
+                            {copied === "key" ? <Check size={18} /> : <Copy size={18} />}
                         </button>
                     </div>
                 </div>
