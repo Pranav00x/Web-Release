@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useWallets } from "@/context/WalletContext";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, Fingerprint } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const WalletCreator = () => {
@@ -11,41 +11,53 @@ export const WalletCreator = () => {
 
     const handleGenerate = async () => {
         setIsGenerating(true);
-        // Add artificial delay for "hacker" feel
-        await new Promise((resolve) => setTimeout(resolve, 600));
+        await new Promise((resolve) => setTimeout(resolve, 800)); // Cinematic delay
         createWallet();
         setIsGenerating(false);
     };
 
     return (
-        <div className="border-2 border-white p-6 mb-8">
-            <h2 className="text-xl font-bold mb-4 uppercase tracking-wider flex items-center gap-2">
-                <span className="w-3 h-3 bg-white block"></span>
-                Identity Fabrication
-            </h2>
-            <p className="text-sm text-gray-400 mb-6 font-mono">
-                Generate disposable EVM credentials. Keys are stored locally.
-                <br />Warning: Irreversible upon surrender.
-            </p>
+        <div className="border border-zinc-800 bg-black p-1 relative group overflow-hidden">
+            {/* Decor */}
+            <div className="absolute top-0 right-0 p-2 opacity-20">
+                <Fingerprint size={100} strokeWidth={0.5} />
+            </div>
 
-            <button
-                onClick={handleGenerate}
-                disabled={isGenerating || isLoading}
-                className={cn(
-                    "w-full py-4 text-lg font-bold uppercase border-2 border-white transition-all flex items-center justify-center gap-2 hover:bg-white hover:text-black focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black",
-                    isGenerating ? "opacity-50 cursor-not-allowed bg-white text-black" : "bg-black text-white"
-                )}
-            >
-                {isGenerating ? (
-                    <>
-                        <Loader2 className="animate-spin" /> FABRICATING...
-                    </>
-                ) : (
-                    <>
-                        <Plus size={24} strokeWidth={3} /> GENERATE IDENTITY
-                    </>
-                )}
-            </button>
+            <div className="border border-zinc-800 p-6 relative z-10 bg-zinc-950/50 backdrop-blur-sm">
+                <h2 className="text-xl font-bold mb-2 uppercase text-white flex items-center gap-2">
+                    <span className="w-2 h-6 bg-emerald-500 block"></span>
+                    Identity Forge
+                </h2>
+                <p className="text-sm text-zinc-500 mb-8 max-w-sm leading-relaxed">
+                    Initialize new cryptographic keypairs locally.
+                    <span className="block mt-2 text-zinc-600 text-xs text-balance">
+                        Entropy is gathered from browser standard crypto API.
+                    </span>
+                </p>
+
+                <button
+                    onClick={handleGenerate}
+                    disabled={isGenerating || isLoading}
+                    className={cn(
+                        "w-full py-4 text-sm font-bold uppercase tracking-widest border border-zinc-600 transition-all flex items-center justify-center gap-3 relative overflow-hidden group/btn hover:border-emerald-500",
+                        isGenerating ? "bg-zinc-900 text-zinc-500 cursor-not-allowed" : "bg-white text-black hover:bg-emerald-500 hover:text-black"
+                    )}
+                >
+                    {/* Button Scanline */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1s_infinite]"></div>
+
+                    {isGenerating ? (
+                        <>
+                            <Loader2 className="animate-spin" size={16} />
+                            <span className="animate-pulse">Forging Keys...</span>
+                        </>
+                    ) : (
+                        <>
+                            <Plus size={18} strokeWidth={3} /> Invoke New Identity
+                        </>
+                    )}
+                </button>
+            </div>
         </div>
     );
 };
